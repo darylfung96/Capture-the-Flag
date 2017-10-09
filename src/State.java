@@ -1,18 +1,28 @@
+import java.util.LinkedList;
+
 public class State {
 
     private State parent;
+    private LinkedList<State> childs;
     private int x;
     private int y;
     private int fCost;
     private int hCost;
     private int timesVisited;
 
-    public State(State parent, int x, int y, int fCost) {
+    private boolean isGoal;
+
+    public State(State parent, int x, int y, int fCost, boolean isGoal) {
         this.parent = parent;
         this.x = x;
         this.y = y;
         this.fCost = fCost;
         timesVisited = 0;
+        this.isGoal = isGoal;
+    }
+
+    public void addChild(State state) {
+        childs.add(state);
     }
 
 
@@ -30,7 +40,10 @@ public class State {
     /*getters*/
     public int getX() { return x; }
     public int getY() { return y; }
+    public int getfCost() { return fCost; }
     public int getTotalCost() { return fCost + hCost; }
     public int getTimesVisited() { return timesVisited; }
     public State getParent() { return parent; }
+    public LinkedList<State> getChilds() { return childs; }
+    public boolean isGoal() { return isGoal; }
 }
