@@ -1,9 +1,6 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.*;
 
 
 /*
@@ -24,7 +21,7 @@ public class AStarAgent {
     private PriorityQueue<State> openList;
     private LinkedList<State> closeList;
 
-    private char stateSpace[][];
+    private HashMap<String, State> stateSpace;
     private State initialState;
     private LinkedList<State> goalStates;
 
@@ -50,8 +47,9 @@ public class AStarAgent {
         numberOperations = 0;
         openList = new PriorityQueue<>(10, Comparator.comparing(State::getTotalCost));
         closeList = new LinkedList<>();
-        getStateSpace(filename);
-
+        goalStates = new LinkedList<>();
+        stateSpace = new HashMap<>();
+        getStateSpace(filename);    // generate the state space by reading the file
     }
 
 
@@ -59,7 +57,7 @@ public class AStarAgent {
         generateSolution();
     }
 
-    public State generateSolution() {
+    private State generateSolution() {
         while(openList.size() > 0) {
             State currentState = openList.poll();
             closeList.add(currentState);
@@ -89,6 +87,8 @@ public class AStarAgent {
     }
 
 
+
+
     // get state spaces
     /*
     * Read a filename adn generate the state space from there.
@@ -100,23 +100,28 @@ public class AStarAgent {
     * add goalStates if '!' were found.
     *
     * */
-    public void getStateSpace(String filename) {
+    private void getStateSpace(String filename) {
         try {
             // read input and get the number of row and column
             Scanner scanner = new Scanner(new File(filename));
             int y = scanner.nextInt();
             int x = scanner.nextInt();
             scanner.nextLine();
-            this.stateSpace = new char[y][x];
 
             for (int currentY = 0; currentY < y; currentY++) {
                 String line = scanner.nextLine();
                 for (int currentX = 0; currentX < x; currentX++) {
-                    this.stateSpace[currentY][currentX] = line.charAt(currentX);
-                    if (line.charAt(currentX) == 'h') {
+                    char current = line.charAt(currentX);
+                    if (current == 'h') {
                         initialState = new State(null, currentX, currentY, 0, false);
-                    } else if (line.charAt(currentX) == '!') {
-                        goalStates.add(new State(null, currentX, currentY, 0, true));
+                        getChildsHelper(initialState, currentX, currentY);
+                    } else if (current == '!') {
+                        State state = new State(null, currentX, currentY, 0, true);
+                        getChildsHelper(state, currentX, currentY);
+                        goalStates.add(state);
+                    } else if (current == '.') {
+                        State state = new State(null, currentX, currentY, 0, false);
+                        getChildsHelper(state, currentX, currentY);
                     }
                 }
             }
@@ -124,6 +129,42 @@ public class AStarAgent {
         } catch(IOException e) {  }
 
     }
+
+    /*
+    * getChildsHelper       (getStateSpace helper)
+    *           Purpose:    Help the state to find its children and after that add the state
+    *                       to the coord HashMap.
+    *
+    *            Example:   ######
+    *                       ...h..
+    *                       ......
+    *            In state h, we will get the coordinates of its available movement
+    *            and check if they can be h's next state or not. If it can then we
+    *            add those states to h's childs.
+    *
+    *            args:
+    *                   state:  the current state to deal with
+    *                   x:      the current x position for this state
+    *                   y:      the current y position for this state
+    *
+    *
+    *
+    * */
+    private void getChildsHelper(State state, int x, int y) {
+        // 4 different possible children
+        String firstChild = Integer.toString(x-1)+","+Integer.toString(y);
+        String secondChild = Integer.toString(x+1)+","+Integer.toString(y);
+        String thirdChild = Integer.toString(x-1)+","+Integer.toString(y-1);
+        String fourthChild = Integer.toString(x-1)+","+Integer.toString(y+1);
+
+        if (stateSpace.containsKey(firstChild)) state.addChild(stateSpace.get(firstChild));
+        if (stateSpace.containsKey(secondChild)) state.addChild(stateSpace.get(secondChild));
+        if (stateSpace.containsKey(thirdChild)) state.addChild(stateSpace.get(thirdChild));
+        if (stateSpace.containsKey(fourthChild)) state.addChild(stateSpace.get(fourthChild));
+
+        stateSpace.put(Integer.toString(x)+","+Integer.toString(y), state);
+    }
+
 
 
 }

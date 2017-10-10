@@ -12,6 +12,7 @@ public class State {
 
     private boolean isGoal;
 
+
     public State(State parent, int x, int y, int fCost, boolean isGoal) {
         this.parent = parent;
         this.x = x;
@@ -19,6 +20,7 @@ public class State {
         this.fCost = fCost;
         timesVisited = 0;
         this.isGoal = isGoal;
+        childs = new LinkedList<>();
     }
 
     public void addChild(State state) {
@@ -46,4 +48,11 @@ public class State {
     public State getParent() { return parent; }
     public LinkedList<State> getChilds() { return childs; }
     public boolean isGoal() { return isGoal; }
+
+    // string
+    public String toString() {
+        String string = "";
+        string += Integer.toString(getX()) + " " + Integer.toString(getY());
+        return string;
+    }
 }
