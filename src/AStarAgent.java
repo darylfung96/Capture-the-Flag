@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -48,11 +50,13 @@ public class AStarAgent {
         numberOperations = 0;
         openList = new PriorityQueue<>(10, Comparator.comparing(State::getTotalCost));
         closeList = new LinkedList<>();
+        getStateSpace(filename);
+
     }
 
 
     public void run() {
-
+        generateSolution();
     }
 
     public State generateSolution() {
@@ -97,24 +101,27 @@ public class AStarAgent {
     *
     * */
     public void getStateSpace(String filename) {
-        // read input and get the number of row and column
-        Scanner scanner = new Scanner(filename);
-        int y = scanner.nextInt();
-        int x = scanner.nextInt();
-        scanner.nextLine();
-        stateSpace = new char[y][x];
+        try {
+            // read input and get the number of row and column
+            Scanner scanner = new Scanner(new File(filename));
+            int y = scanner.nextInt();
+            int x = scanner.nextInt();
+            scanner.nextLine();
+            this.stateSpace = new char[y][x];
 
-        for (int currentY = 0; currentY < y; currentY++) {
-            String line = scanner.nextLine();
-            for (int currentX = 0; currentX < x; currentX++) {
-                stateSpace[currentY][currentX] = line.charAt(currentX);
-                if(line.charAt(currentX) == 'h') {
-                    initialState = new State(null, currentX, currentY, 0, false);
-                } else if (line.charAt(currentX) == '!') {
-                    goalStates.add(new State(null, currentX, currentY, 0, true));
+            for (int currentY = 0; currentY < y; currentY++) {
+                String line = scanner.nextLine();
+                for (int currentX = 0; currentX < x; currentX++) {
+                    this.stateSpace[currentY][currentX] = line.charAt(currentX);
+                    if (line.charAt(currentX) == 'h') {
+                        initialState = new State(null, currentX, currentY, 0, false);
+                    } else if (line.charAt(currentX) == '!') {
+                        goalStates.add(new State(null, currentX, currentY, 0, true));
+                    }
                 }
             }
-        }
+
+        } catch(IOException e) {  }
 
     }
 
