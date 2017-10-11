@@ -37,18 +37,21 @@ public class State {
     }
 
 
-    public void calculateCost(State goalState) {
+    public int calculateCost(State goalState) {
         double goalX = (double)goalState.getX();
         double goalY = (double)goalState.getY();
         double heuristicValue = Math.sqrt(Math.pow(goalX, 2) + Math.pow(goalY, 2));
 
         hCost = (int)(heuristicValue);
+        return hCost;
     }
 
     /*setters*/
     public void setParent(State state) { parent = state; }
     public void increaseVisited() { timesVisited++; }
     public void setfCost(int fCost) { this.fCost = fCost; }
+    public void setGoal(boolean isGoal) { this.isGoal = isGoal; }
+    public void resetCost() { fCost = 0; hCost = 0; }
 
     /*getters*/
     public int getX() { return x; }

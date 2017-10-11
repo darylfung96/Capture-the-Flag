@@ -23,6 +23,7 @@ public class AStarAgent {
 
     private HashMap<String, State> stateSpace;
     private State initialState;
+    private State currentGoal;
     private LinkedList<State> goalStates;
 
     /*
@@ -58,7 +59,7 @@ public class AStarAgent {
 
     }
 
-    //TODO: set after visiting goal state, make it to non goal state.
+    //TODO: calculate cost value for each states traversed
 
     /*
     * run:
@@ -74,16 +75,20 @@ public class AStarAgent {
     * */
     public void run() {
         while(goalStates.size() > 0) {
+            getNearestGoal();
             openList.add(initialState);
+            initialState.setParent(null);
             State currentGoalState = generateSolution();
             if (currentGoalState == null) break; // if we find no solution we break out of loop
+            currentGoalState.setGoal(false);
             initialState = currentGoalState;
 
             // track back to the previous initial position, adding all the states visited by one
             // on its way
-            while (currentGoalState != null && currentGoalState.getParent() != null) {
+            while (currentGoalState != null) {
                 System.out.println(currentGoalState);
                 currentGoalState.increaseVisited();
+                currentGoalState.resetCost();   // reset their total cost value
                 currentGoalState = currentGoalState.getParent();
             }
             System.out.println("reach goal.");
@@ -93,6 +98,29 @@ public class AStarAgent {
         }
 
     }
+
+    /*
+    * setNearestGoal
+    *
+    * Purpose:  Find the nearest goal and set it as the hero/heroine target.
+    *
+    *
+    *
+    * */
+    public void getNearestGoal() {
+        int closestHeuristic = -1;
+        for (State goalState : goalStates) {
+            int currentHeuristic = initialState.calculateCost(goalState);
+
+            // set currentGoal if the heuristic for the current goal state is lower than
+            // the closestHeuristic value
+            if(closestHeuristic < 0 || closestHeuristic > currentHeuristic) {
+                closestHeuristic = currentHeuristic;
+                currentGoal = goalState;
+            }
+        }
+    }
+
 
     /*
     * Generate solution from the initial state to get to the nearest goal state.
@@ -131,6 +159,7 @@ public class AStarAgent {
                 } else {
                     child.setParent(currentState);
                     child.setfCost(currentState.getfCost() + MOVE_COST);
+                    child.calculateCost(currentGoal);
                     openList.add(child);
                 }
 
