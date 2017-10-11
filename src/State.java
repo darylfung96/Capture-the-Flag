@@ -6,8 +6,6 @@ import java.util.LinkedList;
 *           times this state was visited.
 *           There is a isGoal boolean which determine if this state is the goal state.
 *
-*
-*
 * */
 public class State {
 
@@ -40,7 +38,7 @@ public class State {
     public int calculateCost(State goalState) {
         double goalX = (double)goalState.getX();
         double goalY = (double)goalState.getY();
-        double heuristicValue = Math.sqrt(Math.pow(goalX, 2) + Math.pow(goalY, 2));
+        double heuristicValue = Math.sqrt(Math.pow(goalX-x, 2) + Math.pow(goalY-y, 2));
 
         hCost = (int)(heuristicValue);
         return hCost;

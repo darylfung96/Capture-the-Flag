@@ -26,6 +26,9 @@ public class AStarAgent {
     private State currentGoal;
     private LinkedList<State> goalStates;
 
+    private int mapX;   // this is the total x size of the map
+    private int mapY;   // this is the total y size of the map
+
     /*
     * A constructor
     *
@@ -59,8 +62,6 @@ public class AStarAgent {
 
     }
 
-    //TODO: calculate cost value for each states traversed
-
     /*
     * run:
     *
@@ -76,8 +77,8 @@ public class AStarAgent {
     public void run() {
         while(goalStates.size() > 0) {
             getNearestGoal();
-            openList.add(initialState);
             initialState.setParent(null);
+            openList.add(initialState);
             State currentGoalState = generateSolution();
             if (currentGoalState == null) break; // if we find no solution we break out of loop
             currentGoalState.setGoal(false);
@@ -85,17 +86,18 @@ public class AStarAgent {
 
             // track back to the previous initial position, adding all the states visited by one
             // on its way
-            while (currentGoalState != null) {
-                System.out.println(currentGoalState);
+            while (currentGoalState.getParent() != null) {
                 currentGoalState.increaseVisited();
                 currentGoalState.resetCost();   // reset their total cost value
                 currentGoalState = currentGoalState.getParent();
             }
-            System.out.println("reach goal.");
 
             openList.clear();
             closeList.clear();
         }
+
+        // after finished print out the maze
+        printMaze();
 
     }
 
@@ -170,6 +172,11 @@ public class AStarAgent {
     }
 
 
+    public boolean isGoal(State currentState) {
+        return (currentState.getX() == currentGoal.getX() && currentState.getY() == currentGoal.getY());
+    }
+
+
 
 
     // get state spaces
@@ -188,7 +195,9 @@ public class AStarAgent {
             // read input and get the number of row and column
             Scanner scanner = new Scanner(new File(filename));
             int y = scanner.nextInt();
+            mapY = y;
             int x = scanner.nextInt();
+            mapX = x;
             scanner.nextLine();
 
             for (int currentY = 0; currentY < y; currentY++) {
@@ -198,6 +207,7 @@ public class AStarAgent {
                     String currentKey = Integer.toString(currentX) + "," + Integer.toString(currentY);
                     if (current == 'h') {
                         initialState = new State(null, currentX, currentY, 0, false);
+                        initialState.increaseVisited(); // since we start here, we set its times visited starting as one
                         stateSpace.put(currentKey, initialState);
                     } else if (current == '!') {
                         State state = new State(null, currentX, currentY, 0, true);
@@ -254,9 +264,9 @@ public class AStarAgent {
         String thirdChild = Integer.toString(x)+","+Integer.toString(y-1);
         String fourthChild = Integer.toString(x)+","+Integer.toString(y+1);
 
-        if (stateSpace.containsKey(firstChild)) state.addChild(stateSpace.get(firstChild));
+        if (stateSpace.containsKey(firstChild))  state.addChild(stateSpace.get(firstChild));
         if (stateSpace.containsKey(secondChild)) state.addChild(stateSpace.get(secondChild));
-        if (stateSpace.containsKey(thirdChild)) state.addChild(stateSpace.get(thirdChild));
+        if (stateSpace.containsKey(thirdChild))  state.addChild(stateSpace.get(thirdChild));
         if (stateSpace.containsKey(fourthChild)) state.addChild(stateSpace.get(fourthChild));
 
         String currentKey = Integer.toString(x) + "," + Integer.toString(y);
@@ -264,5 +274,33 @@ public class AStarAgent {
     }
 
 
+
+
+    /*
+    *
+    * printMaze
+    *           Purpose:    Print out the solution obtained by the agent
+    *
+    * */
+    private void printMaze() {
+        int timesVisited = 0;
+        for (int y = 0; y < mapY; y++) {
+            StringBuilder currentLine = new StringBuilder("");
+            for (int x = 0; x < mapX; x++) {
+                State state = stateSpace.get(Integer.toString(x)+","+Integer.toString(y));
+                // if state is available to be traversed
+                if(state == null) {
+                    currentLine.append("#");
+                } else {
+                    currentLine.append(Integer.toString(state.getTimesVisited()));
+                    timesVisited += state.getTimesVisited();
+                }
+            }
+            System.out.println(currentLine);
+        } // end of for loop
+
+        System.out.println("Total squares visited: " + Integer.toString(timesVisited));
+        System.out.println("Operations considered: " + numberOperations);
+    }
 
 }
