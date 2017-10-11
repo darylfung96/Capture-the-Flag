@@ -1,5 +1,14 @@
 import java.util.LinkedList;
 
+
+/*
+* State:    Purpose is to store the x and y, its parent, its costs, and the number of
+*           times this state was visited.
+*           There is a isGoal boolean which determine if this state is the goal state.
+*
+*
+*
+* */
 public class State {
 
     private State parent;

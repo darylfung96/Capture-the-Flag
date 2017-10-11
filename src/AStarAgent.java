@@ -58,17 +58,48 @@ public class AStarAgent {
 
     }
 
+    //TODO: set after visiting goal state, make it to non goal state.
 
+    /*
+    * run:
+    *
+    * purpose:
+    *       Run the agent and help it find the closest goal state.
+    *       Once the closest goal state was found, we trace it back to the current position,
+    *       adding all the states on its way the number of times visited by one.
+    *
+    *       Then we start from the current goal state and get to the next nearest goal state
+    *       and repeat the same thing until all the goal states have been achieved.
+    *
+    * */
     public void run() {
-        openList.add(initialState);
-        State gotState = generateSolution();
+        while(goalStates.size() > 0) {
+            openList.add(initialState);
+            State currentGoalState = generateSolution();
+            if (currentGoalState == null) break; // if we find no solution we break out of loop
+            initialState = currentGoalState;
 
-        while(gotState != null && gotState.getParent() != null) {
-            System.out.println(gotState);
-            gotState = gotState.getParent();
+            // track back to the previous initial position, adding all the states visited by one
+            // on its way
+            while (currentGoalState != null && currentGoalState.getParent() != null) {
+                System.out.println(currentGoalState);
+                currentGoalState.increaseVisited();
+                currentGoalState = currentGoalState.getParent();
+            }
+            System.out.println("reach goal.");
+
+            openList.clear();
+            closeList.clear();
         }
+
     }
 
+    /*
+    * Generate solution from the initial state to get to the nearest goal state.
+    *
+    * return:   The goal state.
+    *
+    * */
     private State generateSolution() {
         while(openList.size() > 0) {
             State currentState = openList.poll();
