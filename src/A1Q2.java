@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.Scanner;
 
+//TODO: change reading to System.in
+
 public class A1Q2 {
 
 
