@@ -1,9 +1,6 @@
 import java.io.File;
 import java.util.Scanner;
 
-//TODO: change reading to System.in
-//TODO: handle fail case for unable to capture the flag
-
 public class A1Q2 {
 
 
