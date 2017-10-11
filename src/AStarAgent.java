@@ -99,6 +99,15 @@ public class AStarAgent {
         // after finished print out the maze
         printMaze();
 
+        // handle fail case
+        if (goalStates.size() > 0) {
+            System.out.println("Unable to capture all the flags.");
+            System.out.println("Number of flags not captured: " + goalStates.size());
+        } else {
+            System.out.println("Successfully captured all the flags");
+        }
+
+
     }
 
     /*
