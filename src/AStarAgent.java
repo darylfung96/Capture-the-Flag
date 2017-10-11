@@ -47,7 +47,7 @@ public class AStarAgent {
     * States in closeList will not be checked.
     *
     * */
-    public AStarAgent(String filename) {
+    public AStarAgent() {
         numberOperations = 0;
         openList = new PriorityQueue<>(10, Comparator.comparing(State::getTotalCost));
         closeList = new LinkedList<>();
@@ -55,7 +55,7 @@ public class AStarAgent {
         stateSpace = new HashMap<>();
 
         //generate the states and store them in a coordinate hashmap
-        getStateSpace(filename);    // generate the state space by reading the file
+        getStateSpace();    // generate the state space by reading the file
 
         // get the children for each states available
         getChildren();
@@ -199,10 +199,9 @@ public class AStarAgent {
     * add goalStates if '!' were found.
     *
     * */
-    private void getStateSpace(String filename) {
-        try {
+    private void getStateSpace() {
             // read input and get the number of row and column
-            Scanner scanner = new Scanner(new File(filename));
+            Scanner scanner = new Scanner(System.in);
             int y = scanner.nextInt();
             mapY = y;
             int x = scanner.nextInt();
@@ -230,7 +229,7 @@ public class AStarAgent {
                 }
             }
 
-        } catch(IOException e) {  }
+
 
     }
 
