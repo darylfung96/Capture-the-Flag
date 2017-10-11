@@ -49,34 +49,57 @@ public class AStarAgent {
         closeList = new LinkedList<>();
         goalStates = new LinkedList<>();
         stateSpace = new HashMap<>();
+
+        //generate the states and store them in a coordinate hashmap
         getStateSpace(filename);    // generate the state space by reading the file
+
+        // get the children for each states available
+        getChildren();
+
     }
 
 
     public void run() {
-        generateSolution();
+        openList.add(initialState);
+        State gotState = generateSolution();
+
+        while(gotState != null && gotState.getParent() != null) {
+            System.out.println(gotState);
+            gotState = gotState.getParent();
+        }
     }
 
     private State generateSolution() {
         while(openList.size() > 0) {
             State currentState = openList.poll();
             closeList.add(currentState);
-            if (currentState.isGoal()) return currentState;
+            if (currentState.isGoal()) {
+                goalStates.remove(currentState);
+                return currentState;
+            }
 
-            for (State child:currentState.getChilds()) {
+            for (State child:currentState.getChildren()) {
                 numberOperations++;
                 // consider close list
                 if(closeList.contains(child)) continue;
 
                 // consider goal state
-                if(child.isGoal()) return child;
+                if(child.isGoal()) {
+                    goalStates.remove(child);
+                    child.setParent(currentState);
+                    child.setfCost(currentState.getfCost() + MOVE_COST);
+                    return child;
+                }
 
                 // consider open list
                 if(openList.contains(child)) {
                     if(currentState.getfCost() + MOVE_COST < child.getfCost()) {
                         child.setParent(currentState);
+                        child.setfCost(currentState.getfCost() + MOVE_COST);
                     }
                 } else {
+                    child.setParent(currentState);
+                    child.setfCost(currentState.getfCost() + MOVE_COST);
                     openList.add(child);
                 }
 
@@ -112,17 +135,19 @@ public class AStarAgent {
                 String line = scanner.nextLine();
                 for (int currentX = 0; currentX < x; currentX++) {
                     char current = line.charAt(currentX);
+                    String currentKey = Integer.toString(currentX) + "," + Integer.toString(currentY);
                     if (current == 'h') {
                         initialState = new State(null, currentX, currentY, 0, false);
-                        getChildsHelper(initialState, currentX, currentY);
+                        stateSpace.put(currentKey, initialState);
                     } else if (current == '!') {
                         State state = new State(null, currentX, currentY, 0, true);
-                        getChildsHelper(state, currentX, currentY);
+                        stateSpace.put(currentKey, state);
                         goalStates.add(state);
                     } else if (current == '.') {
                         State state = new State(null, currentX, currentY, 0, false);
-                        getChildsHelper(state, currentX, currentY);
+                        stateSpace.put(currentKey, state);
                     }
+
                 }
             }
 
@@ -130,10 +155,22 @@ public class AStarAgent {
 
     }
 
+
+    /////////////////////// get children ////////////////////////////////
     /*
-    * getChildsHelper       (getStateSpace helper)
-    *           Purpose:    Help the state to find its children and after that add the state
-    *                       to the coord HashMap.
+    * Produce children for the all the states available in the hashmap
+    *
+    * */
+    private void getChildren() {
+        for (Map.Entry<String, State> entry : stateSpace.entrySet()) {
+            State state = entry.getValue();
+            getChildrenHelper(state, state.getX(), state.getY());
+        }
+    }
+
+    /*
+    * getChildsHelper       (getChildren helper)
+    *           Purpose:    Help the states to find its children.
     *
     *            Example:   ######
     *                       ...h..
@@ -150,19 +187,20 @@ public class AStarAgent {
     *
     *
     * */
-    private void getChildsHelper(State state, int x, int y) {
+    private void getChildrenHelper(State state, int x, int y) {
         // 4 different possible children
         String firstChild = Integer.toString(x-1)+","+Integer.toString(y);
         String secondChild = Integer.toString(x+1)+","+Integer.toString(y);
-        String thirdChild = Integer.toString(x-1)+","+Integer.toString(y-1);
-        String fourthChild = Integer.toString(x-1)+","+Integer.toString(y+1);
+        String thirdChild = Integer.toString(x)+","+Integer.toString(y-1);
+        String fourthChild = Integer.toString(x)+","+Integer.toString(y+1);
 
         if (stateSpace.containsKey(firstChild)) state.addChild(stateSpace.get(firstChild));
         if (stateSpace.containsKey(secondChild)) state.addChild(stateSpace.get(secondChild));
         if (stateSpace.containsKey(thirdChild)) state.addChild(stateSpace.get(thirdChild));
         if (stateSpace.containsKey(fourthChild)) state.addChild(stateSpace.get(fourthChild));
 
-        stateSpace.put(Integer.toString(x)+","+Integer.toString(y), state);
+        String currentKey = Integer.toString(x) + "," + Integer.toString(y);
+        stateSpace.put(currentKey, state);
     }
 
 

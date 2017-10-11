@@ -38,6 +38,8 @@ public class State {
 
     /*setters*/
     public void setParent(State state) { parent = state; }
+    public void increaseVisited() { timesVisited++; }
+    public void setfCost(int fCost) { this.fCost = fCost; }
 
     /*getters*/
     public int getX() { return x; }
@@ -46,7 +48,7 @@ public class State {
     public int getTotalCost() { return fCost + hCost; }
     public int getTimesVisited() { return timesVisited; }
     public State getParent() { return parent; }
-    public LinkedList<State> getChilds() { return childs; }
+    public LinkedList<State> getChildren() { return childs; }
     public boolean isGoal() { return isGoal; }
 
     // string

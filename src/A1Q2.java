@@ -9,9 +9,9 @@ public class A1Q2 {
 
     public static void main(String[] args) {
 	try {
-	    Scanner scanner = new Scanner(new File("input.txt"));
+	    Scanner scanner = new Scanner(new File("./src/input.txt"));
 	} catch( Exception e ) {}
-        AStarAgent agent = new AStarAgent("input.txt");
+        AStarAgent agent = new AStarAgent("./src/input.txt");
         agent.run();
 
 	
